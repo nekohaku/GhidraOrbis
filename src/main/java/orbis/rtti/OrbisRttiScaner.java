@@ -63,11 +63,11 @@ public final class OrbisRttiScaner extends ItaniumAbiRttiScanner {
 	}
 	
 	private Relocation getRelocation(Address address) {
-		List<Relocation> relocs = getProgram().getRelocationTable().getRelocations(new AddressSet(address));
-		if (relocs.isEmpty()) {
+		Iterator<Relocation> relocs = getProgram().getRelocationTable().getRelocations(new AddressSet(address));
+		if (!relocs.hasNext()) {
 			return null;
 		}
-		return relocs.get(0);
+		return relocs.next();
 	}
 
 	private static Map<String, TypeInfoConstructor> getCopyMap() {
