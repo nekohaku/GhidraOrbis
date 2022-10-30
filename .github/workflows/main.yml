@@ -13,7 +13,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        ghidra: ['latest', '10.1.3']
+        ghidra: ['latest']
         gradle-version: ['6.9']
 
     steps:
