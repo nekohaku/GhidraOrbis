@@ -8,11 +8,9 @@ import ghidra.app.util.bin.*;
 import ghidra.app.util.bin.format.elf.ElfException;
 import ghidra.app.util.bin.format.elf.ElfProgramHeader;
 import ghidra.app.util.importer.MessageLog;
-import ghidra.app.util.importer.MessageLogContinuesFactory;
+import ghidra.util.Msg;
 import ghidra.util.exception.AssertException;
 
-import generic.continues.GenericFactory;
-import generic.continues.RethrowContinuesFactory;
 import orbis.elf.OrbisElfHeader;
 
 public final class SelfHeader {
@@ -91,18 +89,11 @@ public final class SelfHeader {
 	}
 
 	public OrbisElfHeader buildElfHeader() throws IOException, ElfException {
-		return buildElfHeader(RethrowContinuesFactory.INSTANCE);
+		return new OrbisElfHeader(getElfHeaderByteProvider(), msg -> Msg.info(this, msg));
 	}
 
 	public OrbisElfHeader buildElfHeader(MessageLog log) throws IOException, ElfException {
-		GenericFactory factory = MessageLogContinuesFactory.create(log);
-		return buildElfHeader(factory);
-	}
-
-	private OrbisElfHeader buildElfHeader(GenericFactory factory)
-			throws IOException, ElfException {
-		ByteProvider provider = getElfHeaderByteProvider();
-		return OrbisElfHeader.createElfHeader(factory, provider);
+		return new OrbisElfHeader(getElfHeaderByteProvider(), log::appendMsg);
 	}
 
 	public ByteProvider getElfByteProvider() throws IOException {
@@ -120,7 +111,7 @@ public final class SelfHeader {
 
 			// write the ehdr and phdr table
 			writer.write(elfReader.readNextByteArray(elf.e_ehsize()));
-			int size = elf.e_phnum() * elf.e_phentsize();
+			int size = elf.getProgramHeaderCount() * elf.e_phentsize();
 			writer.seek(elf.e_phoff());
 			writer.write(elfReader.readNextByteArray(size));
 

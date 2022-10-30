@@ -88,7 +88,7 @@ public class OrbisElfProgramBuilder extends DefaultElfProgramBuilder {
 
 			resolve(monitor);
 
-			if (elf.e_shnum() == 0) {
+			if (elf.getSectionHeaderCount() == 0) {
 				// create/expand segments to their fullsize if not sections are defined
 				try {
 					expandProgramHeaderBlocks(monitor);
@@ -139,7 +139,10 @@ public class OrbisElfProgramBuilder extends DefaultElfProgramBuilder {
 	private void markupPltGot(TaskMonitor monitor) {
 		MemoryBlock block = getMemory().getBlock(".plt.got");
 		if (block == null) {
-			return;
+			block = getMemory().getBlock(".got.plt");
+			if (block == null) {
+				return;
+			}
 		}
 		Address addr = block.getStart();
 		int size = getProgram().getDefaultPointerSize();
@@ -199,9 +202,9 @@ public class OrbisElfProgramBuilder extends DefaultElfProgramBuilder {
 
 		ElfHeader elf = getElfHeader();
 		FileBytes fileBytes = getFileBytes();
-		if (elf.isRelocatable() && elf.e_phnum() != 0) {
+		if (elf.isRelocatable() && elf.getProgramHeaderCount() != 0) {
 			log("Ignoring unexpected program headers for relocatable ELF (e_phnum=" +
-				elf.e_phnum() + ")");
+				elf.getProgramHeaderCount() + ")");
 			return;
 		}
 
@@ -289,7 +292,7 @@ public class OrbisElfProgramBuilder extends DefaultElfProgramBuilder {
 		long fullSizeBytes =
 			phdr.getAdjustedMemorySize() * space.getAddressableUnitSize();
 
-		boolean maintainExecuteBit = elf.e_shnum() == 0;
+		boolean maintainExecuteBit = elf.getSectionHeaderCount() == 0;
 
 		if (phdr.getType() == PT_SCE_DYNLIBDATA_VALUE) {
 			fullSizeBytes = loadSizeBytes;
@@ -328,7 +331,7 @@ public class OrbisElfProgramBuilder extends DefaultElfProgramBuilder {
 	}
 
 	private static String getProgramHeaderName(ElfProgramHeader phdr, int i) {
-		if (phdr.getElfHeader().e_shnum() != 0) {
+		if (phdr.getElfHeader().getSectionHeaderCount() != 0) {
 			return "segment_"+Integer.toString(i);
 		}
 		switch(phdr.getType()) {
