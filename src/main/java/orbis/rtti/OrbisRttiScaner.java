@@ -7,6 +7,7 @@ import java.util.Map;
 import ghidra.app.cmd.data.rtti.TypeInfo;
 import ghidra.app.cmd.data.rtti.gcc.typeinfo.*;
 import ghidra.program.model.address.Address;
+import ghidra.program.model.address.AddressSet;
 import ghidra.program.model.listing.Program;
 import ghidra.program.model.reloc.Relocation;
 
@@ -62,7 +63,7 @@ public final class OrbisRttiScaner extends ItaniumAbiRttiScanner {
 	}
 	
 	private Relocation getRelocation(Address address) {
-		List<Relocation> relocs = getProgram().getRelocationTable().getRelocations(address);
+		List<Relocation> relocs = getProgram().getRelocationTable().getRelocations(new AddressSet(address));
 		if (relocs.isEmpty()) {
 			return null;
 		}

@@ -29,7 +29,7 @@ public class OrbisElfHeader extends ElfHeader {
     public static final short ET_SCE_STUBLIB = (short) 0xFE0C;
     public static final short ET_SCE_DYNEXEC = (short) 0xFE10;
     public static final short ET_SCE_DYNAMIC = (short) 0xFE18;
-	public static final short ET_SCE_KERNEL = 2;
+	public static final short ET_SCE_KERNEL = (short) 2;
 
 	public OrbisElfHeader(ByteProvider provider, Consumer<String> errorConsumer) throws ElfException {
 		super(provider, errorConsumer);
